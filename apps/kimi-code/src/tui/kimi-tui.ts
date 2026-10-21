@@ -73,6 +73,7 @@ import { BannerComponent } from './components/chrome/banner';
 import { DeviceCodeBoxComponent } from './components/chrome/device-code-box';
 import { GutterContainer } from './components/chrome/gutter-container';
 import { MoonLoader, type SpinnerStyle } from './components/chrome/moon-loader';
+import type { NotifyPanelKey } from './components/chrome/notify-panel';
 import { WelcomeComponent } from './components/chrome/welcome';
 import { pickRandomWorkingTip } from './components/chrome/working-tips';
 import {
@@ -4112,7 +4113,7 @@ export class KimiTUI {
     return this.sessionEventHandler.notifications.toggleFocus();
   }
 
-  handleNotifyPanelKey(key: 'left' | 'right' | 'up' | 'down' | 'escape'): boolean {
+  handleNotifyPanelKey(key: NotifyPanelKey): boolean {
     return this.sessionEventHandler.notifications.handlePanelKey(key);
   }
 
@@ -4721,6 +4722,7 @@ export class KimiTUI {
 
   private showApprovalPanel(payload: ApprovalPanelData): void {
     this.patchLivePane({ pendingApproval: { data: payload } });
+    this.sessionEventHandler.notifications.setPrompt({ agentId: payload.agent_id });
     notifyTerminalOnce(this.state, `approval:${payload.id}`, {
       title: 'Kimi Code approval required',
       body: payload.tool_name,
@@ -4747,6 +4749,7 @@ export class KimiTUI {
     if (this.approvalPreview !== undefined) this.closeApprovalPreview();
     this.activeApprovalPanel = undefined;
     this.patchLivePane({ pendingApproval: null });
+    this.sessionEventHandler.notifications.setPrompt(undefined);
     this.restoreEditor();
   }
 
@@ -4784,6 +4787,7 @@ export class KimiTUI {
 
   private showQuestionDialog(payload: QuestionPanelData): void {
     this.patchLivePane({ pendingQuestion: { data: payload } });
+    this.sessionEventHandler.notifications.setPrompt({ agentId: payload.agent_id });
     notifyTerminalOnce(this.state, `question:${payload.id}`, {
       title: 'Kimi Code needs your answer',
       body: payload.questions[0]?.question,
@@ -4803,6 +4807,7 @@ export class KimiTUI {
 
   private hideQuestionDialog(): void {
     this.patchLivePane({ pendingQuestion: null });
+    this.sessionEventHandler.notifications.setPrompt(undefined);
     this.restoreEditor();
   }
 }
