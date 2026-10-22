@@ -57,6 +57,22 @@ describe('resolveLoggingConfig', () => {
     expect(cfg.globalFiles).toBe(DEFAULT_GLOBAL_FILES);
   });
 
+  it('ignores malformed numeric log settings', () => {
+    const cfg = resolveLoggingConfig({
+      homeDir: '/h',
+      env: {
+        KIMI_LOG_GLOBAL_MAX_BYTES: '1024bytes',
+        KIMI_LOG_GLOBAL_FILES: '2.5',
+        KIMI_LOG_SESSION_MAX_BYTES: '2048 bytes',
+        KIMI_LOG_SESSION_FILES: '3copies',
+      },
+    });
+    expect(cfg.globalMaxBytes).toBe(DEFAULT_GLOBAL_MAX_BYTES);
+    expect(cfg.globalFiles).toBe(DEFAULT_GLOBAL_FILES);
+    expect(cfg.sessionMaxBytes).toBe(DEFAULT_SESSION_MAX_BYTES);
+    expect(cfg.sessionFiles).toBe(DEFAULT_SESSION_FILES);
+  });
+
   it('resolves the log path regardless of env', () => {
     const cfg = resolveLoggingConfig({ homeDir: '/h', env: {} });
     expect(cfg.globalLogPath).toBe('/h/logs/kimi-code.log');

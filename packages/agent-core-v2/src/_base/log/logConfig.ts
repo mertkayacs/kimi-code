@@ -66,7 +66,9 @@ function parseLevel(value: string | undefined): LogLevel | undefined {
 
 function parsePositiveInt(value: string | undefined): number | undefined {
   if (value === undefined) return undefined;
-  const n = Number.parseInt(value, 10);
-  if (!Number.isFinite(n) || n <= 0) return undefined;
+  const normalized = value.trim();
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) return undefined;
+  const n = Number(normalized);
+  if (!Number.isInteger(n) || n <= 0) return undefined;
   return n;
 }
